@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Imágenes — Dropship AI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f2;--surface:#fff;
+  --border:rgba(0,0,0,0.09);--border-strong:rgba(0,0,0,0.17);
+  --text:#1a1a18;--text-muted:#6b6b66;--text-hint:#9b9b94;
+  --accent-light:#f0efe9;
+  --success-bg:#eaf3de;--success-text:#27500a;
+  --info-bg:#e6f1fb;--info-text:#0c447c;
+  --radius:12px;--radius-sm:8px;
+  --font:'Inter',system-ui,sans-serif
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+.header{background:var(--surface);border-bottom:0.5px solid var(--border);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:15px;font-weight:600;letter-spacing:-0.3px;display:flex;align-items:center;gap:8px}
+.logo-dot{width:8px;height:8px;background:var(--text);border-radius:50%}
+.badge{font-size:10px;font-weight:500;background:#eaf3de;border:0.5px solid rgba(63,150,17,0.2);padding:2px 7px;border-radius:20px;color:#27500a;letter-spacing:0.5px;text-transform:uppercase}
+.container{max-width:860px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem}
+.card h2{font-size:17px;font-weight:600;margin-bottom:5px;letter-spacing:-0.3px}
+.card p{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:1.25rem}
+.api-row{background:var(--info-bg);border:0.5px solid rgba(55,138,221,0.25);border-radius:var(--radius-sm);padding:11px 14px;margin-bottom:0.75rem;display:flex;align-items:center;gap:10px}
+.api-row label{font-size:11px;font-weight:500;color:var(--info-text);white-space:nowrap;text-transform:uppercase;letter-spacing:0.6px;min-width:100px}
+.api-row input{font-family:var(--font);font-size:13px;color:var(--text);background:transparent;border:none;outline:none;flex:1;min-width:0}
+.api-row input::placeholder{color:rgba(12,68,124,0.4)}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+@media(max-width:580px){.field-grid{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px}
+.color-row{display:flex;align-items:center;gap:10px}
+.color-row input[type=color]{width:36px;height:36px;border:0.5px solid var(--border-strong);border-radius:6px;padding:2px;cursor:pointer;background:none}
+.color-hex{font-size:13px;color:var(--text-muted);font-family:monospace}
+.btn{width:100%;padding:12px;font-family:var(--font);font-size:14px;font-weight:500;background:var(--text);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:opacity 0.15s,transform 0.1s;margin-top:0.25rem}
+.btn:hover{opacity:0.88}
+.btn:active{transform:scale(0.99)}
+.btn:disabled{opacity:0.38;cursor:not-allowed}
+.phase-wrap{display:none;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:1.75rem 2rem;margin-bottom:1.5rem}
+.phase-title{font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:1.25rem}
+.phase-list{display:flex;flex-direction:column}
+.phase-item{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:0.5px solid var(--border)}
+.phase-item:last-child{border-bottom:none}
+.p-icon{width:30px;height:30px;border-radius:50%;border:0.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text-hint);background:var(--bg);flex-shrink:0;transition:all 0.3s}
+.phase-item.active .p-icon{background:var(--text);color:#fff;border-color:var(--text)}
+.phase-item.done .p-icon{background:var(--success-bg);color:var(--success-text);border-color:rgba(63,150,17,0.25)}
+.phase-item.error .p-icon{background:#fcebeb;color:#791f1f}
+.p-info{flex:1}
+.p-name{font-size:13px;font-weight:500;color:var(--text-hint);margin-bottom:2px;transition:color 0.3s}
+.phase-item.active .p-name,.phase-item.done .p-name{color:var(--text)}
+.p-desc{font-size:12px;color:var(--text-hint);line-height:1.4}
+.phase-item.active .p-desc{color:var(--text-muted)}
+.p-status{font-size:11px;font-weight:500;color:var(--text-hint);white-space:nowrap}
+.phase-item.done .p-status{color:var(--success-text)}
+.phase-item.error .p-status{color:#791f1f}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block}
+.extracted-card{background:var(--success-bg);border:0.5px solid rgba(63,150,17,0.2);border-radius:var(--radius-sm);padding:1rem 1.25rem;margin-bottom:0.75rem}
+.extracted-label{font-size:10px;font-weight:500;color:var(--success-text);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px}
+.extracted-value{font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap}
+.img-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+@media(max-width:580px){.img-grid{grid-template-columns:1fr}}
+.img-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.img-card-head{padding:0.875rem 1.25rem;border-bottom:0.5px solid var(--border)}
+.img-card-num{font-size:10px;font-weight:500;color:var(--text-hint);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:2px}
+.img-card-title{font-size:13px;font-weight:500}
+.img-card img{width:100%;display:block}
+.img-card-fail{padding:1.5rem;text-align:center;font-size:12px;color:var(--text-hint);background:var(--bg);min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.img-card-actions{padding:0.75rem 1.25rem;border-top:0.5px solid var(--border)}
+.btn-sm{font-family:var(--font);font-size:12px;font-weight:500;padding:6px 12px;border-radius:6px;cursor:pointer;border:0.5px solid var(--border-strong);background:var(--surface);color:var(--text);text-decoration:none;display:inline-block}
+.btn-sm:hover{background:var(--bg)}
+.error-box{display:none;background:#fcebeb;border:0.5px solid rgba(162,45,45,0.25);border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;color:#791f1f;margin-top:1rem}
+.footer-note{font-size:12px;color:var(--text-hint);text-align:center;margin-top:2rem}
+.sim-badge{background:#faeeda;border:0.5px solid rgba(186,117,23,0.25);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:#633806;margin-bottom:1.25rem;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo"><div class="logo-dot"></div>Dropship AI — Test Imágenes</div>
+  <span class="badge">Fase 2</span>
+</div>
+<div class="container">
+
+  <div class="card">
+    <h2>Test — Generación de imágenes</h2>
+    <p>Prueba de la Fase 2 con research simulado del producto <strong>Herbal Purifier</strong>. Solo necesitas tu API key de Claude para generar los prompts.</p>
+
+    <div class="sim-badge">
+      Research simulado: Herbal Purifier — Inhalador herbal para dejar de fumar con gordolobo, menta y tomillo. Avatar: hombre/mujer 35-55 años, fumador frustrado que quiere algo natural.
+    </div>
+
+    <div class="api-row">
+      <label>Claude API Key</label>
+      <input type="password" id="claudeKey" placeholder="sk-ant-api03-..." />
+    </div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label>Color principal de marca</label>
+        <div class="color-row">
+          <input type="color" id="color1" value="#1a6b3c" oninput="document.getElementById('hex1').textContent=this.value" />
+          <span class="color-hex" id="hex1">#1a6b3c</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Color secundario</label>
+        <div class="color-row">
+          <input type="color" id="color2" value="#ffffff" oninput="document.getElementById('hex2').textContent=this.value" />
+          <span class="color-hex" id="hex2">#ffffff</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" id="btnTest" onclick="startTest()">Generar 5 imágenes de prueba →</button>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <div class="phase-wrap" id="phaseWrap">
+    <div class="phase-title">Procesando</div>
+    <div class="phase-list" id="phaseList"></div>
+  </div>
+
+  <div id="extractedWrap" style="display:none;margin-bottom:1rem"></div>
+
+  <div id="imgResults" style="display:none">
+    <div style="font-size:15px;font-weight:600;margin-bottom:1rem" id="imgTitle">—</div>
+    <div class="img-grid" id="imgGrid"></div>
+  </div>
+
+  <div class="footer-note">Claude genera prompts · Supabase → Replicate genera imágenes · Todo desde el research</div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://pmegzzdmryywqgrtjuzs.supabase.co/functions/v1/gemini-images";
+
+const IMG_TYPES = [
+  {key:"hero",         title:"Hero — Producto + beneficio urgente"},
+  {key:"beneficios",   title:"Beneficios — 4 burbujas"},
+  {key:"lifestyle",    title:"Lifestyle — Avatar usando el producto"},
+  {key:"estadisticas", title:"Estadísticas — Porcentajes"},
+  {key:"ingredientes", title:"Ingredientes — 4 columnas"}
+];
+
+const PHASES = [
+  {key:"extract", name:"Extrayendo contexto del research", desc:"Claude identifica beneficio, avatar, estadísticas e ingredientes"},
+  {key:"prompts", name:"Generando prompts para Replicate",  desc:"5 prompts fotorrealistas en inglés basados en el research"},
+  {key:"hero",         name:"Imagen 1 — Hero",         desc:"Producto + beneficio con urgencia"},
+  {key:"beneficios",   name:"Imagen 2 — Beneficios",   desc:"4 burbujas de beneficios reales del avatar"},
+  {key:"lifestyle",    name:"Imagen 3 — Lifestyle",     desc:"Persona del avatar usando el producto"},
+  {key:"estadisticas", name:"Imagen 4 — Estadísticas", desc:"Porcentajes extraídos del research"},
+  {key:"ingredientes", name:"Imagen 5 — Ingredientes", desc:"4 ingredientes en columnas visuales"}
+];
+
+// SIMULATED RESEARCH — Herbal Purifier
+const SIMULATED_RESEARCH = {
+  producto: "Herbal Purifier",
+  descripcion: "Inhalador herbal para dejar de fumar. Ingredientes principales: gordolobo (expectorante y antiinflamatorio ancestral), menta (mentol descongestionante, calma la ansiedad), tomillo (broncodilatador, elimina mucosidad).",
+  cliente: "Hombres y mujeres 35-55 años, fumadores crónicos frustrados con métodos convencionales. Buscan algo natural. Les aterra el 'mono' y la ansiedad de dejar de fumar. Muchos tienen familia y quieren estar sanos para sus hijos.",
+  dolores: "Miedo al mono y la ansiedad, dependencia mental de la nicotina, vergüenza social por fumar, pulmones dañados, fracasos anteriores con parches y chicles.",
+  beneficios: "Calma la ansiedad sin nicotina, despeja las vías respiratorias, ocupa la boca y la mente como un cigarrillo, ingredientes 100% naturales, sin efectos secundarios químicos.",
+  ingredientes: "Gordolobo: expectorante ancestral para pulmones. Menta: calma la ansiedad y despeja. Tomillo: broncodilatador natural. Eucalipto: limpia las vías respiratorias.",
+  estadisticas: "92% sintió menos ansiedad en los primeros días. 87% redujo el consumo de cigarrillos en la primera semana. 84% reportó respirar mejor después de 7 días.",
+  avatar: "Hombre o mujer latina de 40-50 años, aspecto cansado pero esperanzador, ropa casual cotidiana, en ambiente doméstico cálido como cocina o sala",
+  villanos: "Parches de nicotina (adicción parcial, cara), cigarrillos electrónicos (daños pulmonares, toxinas), pastillas médicas (efectos secundarios graves)."
+};
+
+let imgData = {};
+
+function showError(m){const b=document.getElementById("errorBox");b.textContent=m;b.style.display="block"}
+function hideError(){document.getElementById("errorBox").style.display="none"}
+
+function buildPhaseUI(){
+  document.getElementById("phaseList").innerHTML=PHASES.map((p,i)=>`
+    <div class="phase-item" id="ph-${p.key}">
+      <div class="p-icon">${i+1}</div>
+      <div class="p-info">
+        <div class="p-name">${p.name}</div>
+        <div class="p-desc">${p.desc}</div>
+      </div>
+      <div class="p-status">Pendiente</div>
+    </div>`).join("");
+}
+
+function setPhase(key,state,status){
+  const el=document.getElementById("ph-"+key);
+  if(!el)return;
+  el.className="phase-item "+state;
+  el.querySelector(".p-status").textContent=status;
+  const ic=el.querySelector(".p-icon");
+  if(state==="active")ic.innerHTML='<div class="spinner"></div>';
+  else if(state==="done")ic.textContent="✓";
+  else if(state==="error")ic.textContent="✕";
+}
+
+function parseJSON(text){
+  try{return JSON.parse(text.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim())}
+  catch{const m=text.match(/\{[\s\S]*\}/);if(m)try{return JSON.parse(m[0])}catch{}return null;}
+}
+
+async function callClaude(key,system,user){
+  const res=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01"},
+    body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:4000,system,messages:[{role:"user",content:user}]})
+  });
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||"Claude HTTP "+res.status)}
+  const d=await res.json();
+  return d.content.filter(b=>b.type==="text").map(b=>b.text).join("\n");
+}
+
+async function callReplicate(prompt){
+  const res=await fetch(SUPABASE_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({prompt})
+  });
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error||"Supabase HTTP "+res.status)}
+  const data=await res.json();
+  if(data.error)throw new Error(data.error);
+  if(!data.image)throw new Error("No se devolvió imagen");
+  return data.image;
+}
+
+async function startTest(){
+  hideError();
+  const claudeKey=document.getElementById("claudeKey").value.trim();
+  const color1=document.getElementById("color1").value;
+  const color2=document.getElementById("color2").value;
+  if(!claudeKey)return showError("Ingresa tu API Key de Claude.");
+
+  imgData={};
+  document.getElementById("btnTest").disabled=true;
+  document.getElementById("phaseWrap").style.display="block";
+  document.getElementById("extractedWrap").style.display="none";
+  document.getElementById("imgResults").style.display="none";
+  buildPhaseUI();
+
+  const R=SIMULATED_RESEARCH;
+
+  // STEP 1: Extract context
+  let ctx={};
+  try{
+    setPhase("extract","active","Analizando...");
+    const sys=`You are a direct response copywriting expert. Extract image generation data from product research. Respond ONLY with valid JSON. No markdown.`;
+    const usr=`Extract data for image generation for "${R.producto}".
+Product: ${R.descripcion}
+Client: ${R.cliente}
+Pain points: ${R.dolores}
+Benefits: ${R.beneficios}
+Ingredients: ${R.ingredientes}
+Statistics: ${R.estadisticas}
+Avatar: ${R.avatar}
+Villains: ${R.villanos}
+
+Return JSON:
+{
+  "beneficio_hero": "Single most urgent benefit MAX 8 words, style 'Reduce X in Y days', in Spanish, based on real pain points",
+  "beneficios_4": ["Benefit 1 — 2-4 words Spanish","Benefit 2 — 2-4 words Spanish","Benefit 3 — 2-4 words Spanish","Benefit 4 — 2-4 words Spanish"],
+  "avatar_desc": "Physical description for lifestyle photo based on real avatar data",
+  "estadisticas": [{"pct":92,"desc":"8 words Spanish"},{"pct":87,"desc":"8 words Spanish"},{"pct":84,"desc":"8 words Spanish"}],
+  "ingredientes": [{"nombre":"Gordolobo","desc":"4-6 words Spanish"},{"nombre":"Menta","desc":"4-6 words Spanish"},{"nombre":"Tomillo","desc":"4-6 words Spanish"},{"nombre":"Eucalipto","desc":"4-6 words Spanish"}],
+  "producto_visual": "Visual description of a herbal inhaler product packaging"
+}`;
+    const raw=await callClaude(claudeKey,sys,usr);
+    ctx=parseJSON(raw);
+    if(!ctx)throw new Error("No se pudo extraer contexto.");
+
+    document.getElementById("extractedWrap").style.display="block";
+    document.getElementById("extractedWrap").innerHTML=`
+      <div class="extracted-card">
+        <div class="extracted-label">Beneficio hero</div>
+        <div class="extracted-value" style="font-weight:600;font-size:15px">${ctx.beneficio_hero}</div>
+      </div>
+      <div class="extracted-card">
+        <div class="extracted-label">4 beneficios para burbujas</div>
+        <div class="extracted-value">${(ctx.beneficios_4||[]).map((b,i)=>`${i+1}. ${b}`).join("\n")}</div>
+      </div>
+      <div class="extracted-card">
+        <div class="extracted-label">Avatar para lifestyle</div>
+        <div class="extracted-value">${ctx.avatar_desc}</div>
+      </div>
+      <div class="extracted-card">
+        <div class="extracted-label">Estadísticas</div>
+        <div class="extracted-value">${(ctx.estadisticas||[]).map(s=>`${s.pct}% — ${s.desc}`).join("\n")}</div>
+      </div>`;
+    setPhase("extract","done","Completado ✓");
+  }catch(e){
+    setPhase("extract","error","Error");
+    document.getElementById("btnTest").disabled=false;
+    showError("Error extrayendo contexto: "+e.message);
+    return;
+  }
+
+  // STEP 2: Generate prompts
+  let prompts={};
+  try{
+    setPhase("prompts","active","Generando...");
+    const sys=`You are an expert prompt engineer for photorealistic commercial product photography. Generate precise image prompts. Respond ONLY with valid JSON. No markdown.`;
+    const b4=ctx.beneficios_4||["Natural ingredients","No nicotine","Fast results","Easy to use"];
+    const stats=ctx.estadisticas||[{pct:92,desc:""},{pct:87,desc:""},{pct:84,desc:""}];
+    const ings=ctx.ingredientes||[{nombre:"Gordolobo",desc:""},{nombre:"Menta",desc:""},{nombre:"Tomillo",desc:""},{nombre:"Eucalipto",desc:""}];
+    const usr=`Generate 5 ultra-detailed photorealistic image prompts for "${R.producto}".
+Hero benefit: ${ctx.beneficio_hero}
+4 Benefits: ${b4.join(" | ")}
+Avatar: ${ctx.avatar_desc}
+Brand color 1: ${color1}
+Brand color 2: ${color2}
+Product: ${ctx.producto_visual}
+
+Return JSON with exactly these 5 keys:
+{
+  "hero": "Professional commercial product photography: a sleek herbal inhaler stick (${ctx.producto_visual}) centered perfectly on solid ${color1} background, soft studio lighting from above-left creating subtle shadow beneath product, bold ${color2} sans-serif headline text '${ctx.beneficio_hero}' displayed prominently at top of image, clean minimalist e-commerce composition, photorealistic render, 1:1 square format, 8K resolution, luxury product aesthetic",
+
+  "beneficios": "Clean product advertisement: herbal inhaler (${ctx.producto_visual}) centered on solid ${color1} background, four cream/beige circular bubbles symmetrically placed around product (top-left, top-right, bottom-left, bottom-right), each bubble contains a minimal line icon and short ${color2} text label: '${b4[0]}' top-left, '${b4[1]}' top-right, '${b4[2]}' bottom-left, '${b4[3]}' bottom-right, thin connecting lines from product to each bubble, photorealistic product rendering, professional infographic advertising style, 1:1 square",
+
+  "lifestyle": "Hyperrealistic lifestyle photograph: ${ctx.avatar_desc}, holding or using a small herbal inhaler in a natural gesture, genuine expression of calm relief, warm natural indoor lighting, product clearly visible, shot on Canon R5 85mm f/1.8 lens, soft bokeh background of home environment, no text overlay, authentic magazine quality photography, warm color grading",
+
+  "estadisticas": "Premium product advertisement: herbal inhaler (${ctx.producto_visual}) centered on ${color1} background with subtle vignette, three floating statistics in light mint typography: top-left shows '${stats[0].pct}%' in large bold white font with description '${stats[0].desc}' in smaller text below, top-right shows '${stats[1].pct}%' with '${stats[1].desc}', bottom-center shows '${stats[2].pct}%' with '${stats[2].desc}', soft studio product lighting, clean premium brand layout, 1:1 square",
+
+  "ingredientes": "Clean minimal ingredient showcase: light cream/white background, four vertical pill-shaped rounded frames arranged horizontally side by side, pill 1 contains macro close-up of mullein herb (gordolobo), pill 2 contains fresh mint leaves close-up, pill 3 contains thyme sprigs macro photo, pill 4 contains eucalyptus leaves macro, below each pill: bold ingredient name '${ings[0].nombre}' '${ings[1].nombre}' '${ings[2].nombre}' '${ings[3].nombre}' with short benefit description, ${color1} accent color on pill borders, cosmetic brand catalog style, soft even lighting, flat lay aesthetic"
+}`;
+    const raw=await callClaude(claudeKey,sys,usr);
+    prompts=parseJSON(raw);
+    if(!prompts)throw new Error("No se pudieron generar los prompts.");
+    setPhase("prompts","done","Completado ✓");
+  }catch(e){
+    setPhase("prompts","error","Error");
+    document.getElementById("btnTest").disabled=false;
+    showError("Error generando prompts: "+e.message);
+    return;
+  }
+
+  // STEPS 3-7: Generate images
+  for(const t of IMG_TYPES){
+    setPhase(t.key,"active","Generando con Replicate...");
+    try{
+      const src=await callReplicate(prompts[t.key]||"");
+      imgData[t.key]=src;
+      setPhase(t.key,"done","Completado ✓");
+    }catch(e){
+      imgData[t.key]="ERR:"+e.message;
+      setPhase(t.key,"error",e.message.substring(0,50));
+    }
+  }
+
+  // Render results
+  const ok=Object.values(imgData).filter(v=>!v.startsWith("ERR")).length;
+  document.getElementById("imgResults").style.display="block";
+  document.getElementById("imgTitle").textContent=`${R.producto} — ${ok} de 5 imágenes generadas`;
+  document.getElementById("imgGrid").innerHTML=IMG_TYPES.map((t,i)=>{
+    const src=imgData[t.key];
+    const isErr=!src||src.startsWith("ERR:");
+    return `<div class="img-card">
+      <div class="img-card-head">
+        <div class="img-card-num">Imagen ${i+1}</div>
+        <div class="img-card-title">${t.title}</div>
+      </div>
+      ${isErr
+        ?`<div class="img-card-fail"><span>No se pudo generar</span><small>${(src||"").replace("ERR:","").substring(0,120)}</small></div>`
+        :`<img src="${src}" alt="${t.title}" style="width:100%;display:block"/><div class="img-card-actions"><a class="btn-sm" href="${src}" target="_blank">Abrir imagen</a></div>`
+      }
+    </div>`;
+  }).join("");
+
+  document.getElementById("btnTest").disabled=false;
+  document.getElementById("btnTest").textContent="Regenerar →";
+}
+</script>
+</body>
+</html>
