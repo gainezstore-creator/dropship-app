@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Imágenes — Dropship AI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f2;--surface:#fff;
+  --border:rgba(0,0,0,0.09);--border-strong:rgba(0,0,0,0.17);
+  --text:#1a1a18;--text-muted:#6b6b66;--text-hint:#9b9b94;
+  --success-bg:#eaf3de;--success-text:#27500a;
+  --info-bg:#e6f1fb;--info-text:#0c447c;
+  --radius:12px;--radius-sm:8px;
+  --font:'Inter',system-ui,sans-serif
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+.header{background:var(--surface);border-bottom:0.5px solid var(--border);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:15px;font-weight:600;letter-spacing:-0.3px;display:flex;align-items:center;gap:8px}
+.logo-dot{width:8px;height:8px;background:var(--text);border-radius:50%}
+.badge{font-size:10px;font-weight:500;background:var(--success-bg);border:0.5px solid rgba(63,150,17,0.2);padding:2px 7px;border-radius:20px;color:var(--success-text);letter-spacing:0.5px;text-transform:uppercase}
+.container{max-width:860px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem}
+.card h2{font-size:17px;font-weight:600;margin-bottom:5px;letter-spacing:-0.3px}
+.card p{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:1.25rem}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
+@media(max-width:580px){.field-grid{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px}
+.field input{font-family:var(--font);font-size:14px;color:var(--text);background:var(--bg);border:0.5px solid var(--border-strong);border-radius:var(--radius-sm);padding:10px 12px;outline:none;transition:border-color 0.15s}
+.field input:focus{border-color:var(--text);background:var(--surface)}
+.field input::placeholder{color:var(--text-hint)}
+.color-row{display:flex;align-items:center;gap:10px}
+.color-row input[type=color]{width:36px;height:36px;border:0.5px solid var(--border-strong);border-radius:6px;padding:2px;cursor:pointer;background:none}
+.color-hex{font-size:13px;color:var(--text-muted);font-family:monospace}
+.btn{width:100%;padding:12px;font-family:var(--font);font-size:14px;font-weight:500;background:var(--text);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:opacity 0.15s,transform 0.1s}
+.btn:hover{opacity:0.88}
+.btn:active{transform:scale(0.99)}
+.btn:disabled{opacity:0.38;cursor:not-allowed}
+.phase-wrap{display:none;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:1.75rem 2rem;margin-bottom:1.5rem;margin-top:1.5rem}
+.phase-title{font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:1.25rem}
+.phase-list{display:flex;flex-direction:column}
+.phase-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:0.5px solid var(--border)}
+.phase-item:last-child{border-bottom:none}
+.p-icon{width:28px;height:28px;border-radius:50%;border:0.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text-hint);background:var(--bg);flex-shrink:0;transition:all 0.3s}
+.phase-item.active .p-icon{background:var(--text);color:#fff;border-color:var(--text)}
+.phase-item.done .p-icon{background:var(--success-bg);color:var(--success-text);border-color:rgba(63,150,17,0.25)}
+.phase-item.error .p-icon{background:#fcebeb;color:#791f1f}
+.p-name{font-size:13px;font-weight:500;color:var(--text-hint);flex:1;transition:color 0.3s}
+.phase-item.active .p-name,.phase-item.done .p-name{color:var(--text)}
+.p-status{font-size:11px;font-weight:500;color:var(--text-hint);white-space:nowrap}
+.phase-item.done .p-status{color:var(--success-text)}
+.phase-item.error .p-status{color:#791f1f}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block}
+.img-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+@media(max-width:580px){.img-grid{grid-template-columns:1fr}}
+.img-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.img-card-head{padding:0.875rem 1.25rem;border-bottom:0.5px solid var(--border)}
+.img-card-num{font-size:10px;font-weight:500;color:var(--text-hint);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:2px}
+.img-card-title{font-size:13px;font-weight:500}
+.img-card img{width:100%;display:block}
+.img-card-fail{padding:1.5rem;text-align:center;font-size:12px;color:var(--text-hint);background:var(--bg);min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.img-card-actions{padding:0.75rem 1.25rem;border-top:0.5px solid var(--border)}
+.btn-sm{font-family:var(--font);font-size:12px;font-weight:500;padding:6px 12px;border-radius:6px;cursor:pointer;border:0.5px solid var(--border-strong);background:var(--surface);color:var(--text);text-decoration:none;display:inline-block}
+.btn-sm:hover{background:var(--bg)}
+.error-box{display:none;background:#fcebeb;border:0.5px solid rgba(162,45,45,0.25);border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;color:#791f1f;margin-top:1rem}
+.results-header{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.75rem;margin-top:1.5rem;margin-bottom:1rem}
+.results-title{font-size:16px;font-weight:600;letter-spacing:-0.3px}
+.results-meta{font-size:12px;color:var(--text-muted);margin-top:3px}
+.footer-note{font-size:12px;color:var(--text-hint);text-align:center;margin-top:2rem}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo"><div class="logo-dot"></div>Dropship AI — Test</div>
+  <span class="badge">Imágenes</span>
+</div>
+<div class="container">
+
+  <div class="card">
+    <h2>Test de generación de imágenes</h2>
+    <p>Ingresa el nombre y descripción del producto, elige los colores de tu marca y genera las 5 imágenes directamente con Replicate.</p>
+
+    <div class="field-grid">
+      <div class="field">
+        <label>Nombre del producto</label>
+        <input type="text" id="productName" placeholder="Ej: Herbal Purifier" value="Herbal Purifier" />
+      </div>
+      <div class="field">
+        <label>Descripción corta</label>
+        <input type="text" id="productDesc" placeholder="Ej: Inhalador herbal para dejar de fumar" value="Herbal inhaler to quit smoking with mullein, mint and thyme" />
+      </div>
+      <div class="field">
+        <label>Beneficio principal (máx 8 palabras)</label>
+        <input type="text" id="mainBenefit" placeholder="Ej: Deja de fumar en 7 días" value="Quit smoking naturally in 7 days" />
+      </div>
+      <div class="field">
+        <label>Avatar (para foto lifestyle)</label>
+        <input type="text" id="avatarDesc" placeholder="Ej: Mujer latina 40 años, casual" value="Latino man or woman 40-50 years old, casual home setting" />
+      </div>
+      <div class="field">
+        <label>Color principal de marca</label>
+        <div class="color-row">
+          <input type="color" id="color1" value="#1a6b3c" oninput="document.getElementById('hex1').textContent=this.value" />
+          <span class="color-hex" id="hex1">#1a6b3c</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Color secundario</label>
+        <div class="color-row">
+          <input type="color" id="color2" value="#ffffff" oninput="document.getElementById('hex2').textContent=this.value" />
+          <span class="color-hex" id="hex2">#ffffff</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" id="btnGen" onclick="startGeneration()">Generar 5 imágenes →</button>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <div class="phase-wrap" id="phaseWrap">
+    <div class="phase-title">Generando imágenes con Replicate — Flux 1.1 Pro</div>
+    <div class="phase-list" id="phaseList"></div>
+  </div>
+
+  <div id="resultsWrap" style="display:none">
+    <div class="results-header">
+      <div class="results-title" id="resultsTitle">—</div>
+      <div class="results-meta" id="resultsMeta">—</div>
+    </div>
+    <div class="img-grid" id="imgGrid"></div>
+  </div>
+
+  <div class="footer-note">Replicate · Flux 1.1 Pro · vía Supabase Edge Function</div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://pmegzzdmryywqgrtjuzs.supabase.co/functions/v1/gemini-images";
+
+const IMG_TYPES = [
+  {key:"hero",         title:"Hero — Producto + beneficio"},
+  {key:"beneficios",   title:"Beneficios — 4 burbujas"},
+  {key:"lifestyle",    title:"Lifestyle — Persona usando el producto"},
+  {key:"estadisticas", title:"Estadísticas — Porcentajes"},
+  {key:"ingredientes", title:"Ingredientes — 4 columnas"}
+];
+
+let imgData = {};
+
+function showError(m){const b=document.getElementById("errorBox");b.textContent=m;b.style.display="block"}
+function hideError(){document.getElementById("errorBox").style.display="none"}
+
+function buildPhaseUI(){
+  document.getElementById("phaseList").innerHTML = IMG_TYPES.map((t,i) => `
+    <div class="phase-item" id="ph-${t.key}">
+      <div class="p-icon">${i+1}</div>
+      <div class="p-name">${t.title}</div>
+      <div class="p-status">Pendiente</div>
+    </div>`).join("");
+}
+
+function setPhase(key, state, status){
+  const el = document.getElementById("ph-"+key);
+  if(!el) return;
+  el.className = "phase-item "+state;
+  el.querySelector(".p-status").textContent = status;
+  const ic = el.querySelector(".p-icon");
+  if(state==="active") ic.innerHTML='<div class="spinner"></div>';
+  else if(state==="done") ic.textContent="✓";
+  else if(state==="error") ic.textContent="✕";
+}
+
+function buildPrompts(name, desc, benefit, avatar, c1, c2){
+  return {
+    hero: `Professional commercial product photography: a ${desc} product centered perfectly on solid ${c1} background, soft studio lighting from above creating subtle shadow beneath product, bold white sans-serif headline text "${benefit}" displayed prominently at top of image, clean minimalist e-commerce composition, photorealistic render, 1:1 square format, 8K resolution, luxury product aesthetic`,
+
+    beneficios: `Clean product advertisement: ${name} product (${desc}) centered on solid ${c1} background, four cream circular bubbles symmetrically placed around product connected by thin lines, each bubble has minimal flat icon and short white text label: top-left "100% Natural", top-right "Fast Results", bottom-left "No Side Effects", bottom-right "Easy to Use", photorealistic product rendering, professional infographic advertising style, 1:1 square format`,
+
+    lifestyle: `Hyperrealistic lifestyle photograph: ${avatar}, holding and using a small ${name} product in a natural gesture, genuine expression of calm relief and satisfaction, warm natural indoor lighting, product clearly visible in hand, shot on Canon R5 85mm f/1.8 lens, soft bokeh background of cozy home environment, no text overlay, authentic magazine quality photography, warm color grading`,
+
+    estadisticas: `Premium product advertisement: ${name} (${desc}) centered on ${c1} background with subtle vignette, three floating statistics in light mint bold typography around product: top-left shows "92%" large bold white number with description "felt less anxiety in first days" below in smaller text, top-right shows "87%" with "reduced consumption in first week", bottom-center shows "84%" with "reported breathing better after 7 days", soft studio product lighting, clean premium brand layout, 1:1 square`,
+
+    ingredientes: `Clean minimal ingredient showcase on light cream white background, four vertical pill-shaped rounded frames arranged side by side horizontally, pill 1 contains macro close-up of mullein herb flowers and leaves, pill 2 contains fresh green mint leaves macro photo, pill 3 contains thyme sprigs macro photography, pill 4 contains eucalyptus leaves and branches macro, below each pill bold ingredient name with short description, ${c1} accent color on pill borders and frame outlines, luxury cosmetic brand catalog style, soft even studio lighting, flat lay aesthetic`
+  };
+}
+
+async function callReplicate(prompt){
+  const res = await fetch(SUPABASE_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt })
+  });
+  if(!res.ok){
+    const e = await res.json().catch(()=>({}));
+    throw new Error(e?.error || "Supabase HTTP "+res.status);
+  }
+  const data = await res.json();
+  if(data.error) throw new Error(data.error);
+  if(!data.image) throw new Error("No se devolvió imagen");
+  return data.image;
+}
+
+async function startGeneration(){
+  hideError();
+  const name    = document.getElementById("productName").value.trim();
+  const desc    = document.getElementById("productDesc").value.trim();
+  const benefit = document.getElementById("mainBenefit").value.trim();
+  const avatar  = document.getElementById("avatarDesc").value.trim();
+  const c1      = document.getElementById("color1").value;
+  const c2      = document.getElementById("color2").value;
+
+  if(!name)    return showError("Ingresa el nombre del producto.");
+  if(!benefit) return showError("Ingresa el beneficio principal.");
+
+  imgData = {};
+  document.getElementById("btnGen").disabled = true;
+  document.getElementById("phaseWrap").style.display = "block";
+  document.getElementById("resultsWrap").style.display = "none";
+  buildPhaseUI();
+
+  const prompts = buildPrompts(name, desc, benefit, avatar, c1, c2);
+
+  for(const t of IMG_TYPES){
+    setPhase(t.key, "active", "Generando...");
+    try{
+      const src = await callReplicate(prompts[t.key]);
+      imgData[t.key] = src;
+      setPhase(t.key, "done", "Completado ✓");
+    }catch(e){
+      imgData[t.key] = "ERR:"+e.message;
+      setPhase(t.key, "error", e.message.substring(0,50));
+    }
+  }
+
+  const ok = Object.values(imgData).filter(v=>!v.startsWith("ERR")).length;
+  document.getElementById("resultsWrap").style.display = "block";
+  document.getElementById("resultsTitle").textContent = name+" — Imágenes generadas";
+  document.getElementById("resultsMeta").textContent = `${ok} de 5 imágenes · ${new Date().toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"})}`;
+
+  document.getElementById("imgGrid").innerHTML = IMG_TYPES.map((t,i) => {
+    const src = imgData[t.key];
+    const isErr = !src || src.startsWith("ERR:");
+    return `<div class="img-card">
+      <div class="img-card-head">
+        <div class="img-card-num">Imagen ${i+1}</div>
+        <div class="img-card-title">${t.title}</div>
+      </div>
+      ${isErr
+        ? `<div class="img-card-fail"><span>No se pudo generar</span><small>${(src||"").replace("ERR:","").substring(0,120)}</small></div>`
+        : `<img src="${src}" alt="${t.title}" style="width:100%;display:block"/>
+           <div class="img-card-actions"><a class="btn-sm" href="${src}" target="_blank">Abrir imagen</a></div>`
+      }
+    </div>`;
+  }).join("");
+
+  document.getElementById("btnGen").disabled = false;
+  document.getElementById("btnGen").textContent = "Regenerar →";
+}
+</script>
+</body>
+</html>
